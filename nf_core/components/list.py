@@ -61,7 +61,6 @@ class ComponentList(ComponentCommand):
         # We have a pipeline - list what's installed
         else:
             # Check that we are in a pipeline directory
-
             try:
                 if self.repo_type != "pipeline":
                     raise UserWarning(
