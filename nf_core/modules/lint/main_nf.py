@@ -545,5 +545,9 @@ def _container_type(line):
         if url_match:
             return "singularity"
         return None
-    if line.startswith("biocontainers/") or line.startswith("quay.io/"):
+    if (
+        line.startswith("biocontainers/")
+        or line.startswith("quay.io/")
+        or (line.count("/") == 1 and line.count(":") == 1)
+    ):
         return "docker"

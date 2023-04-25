@@ -17,6 +17,7 @@
 - Added support for the apptainer container engine via `-profile apptainer`. ([#2244](https://github.com/nf-core/tools/issues/2244)) [Contributed by @jfy133]
 - Added config `docker.registry` to pipeline template for a configurable default container registry when using Docker containers. Defaults to `quay.io` ([#2133](https://github.com/nf-core/tools/pull/2133))
 - Add tower.yml file to the pipeline template ([#2251](https://github.com/nf-core/tools/pull/2251))
+- Removed `quay.io` from all module Docker container references as this is now supplied at pipeline level. ([#2249](https://github.com/nf-core/tools/pull/2249))
 
 ### Linting
 
