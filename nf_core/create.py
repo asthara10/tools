@@ -18,6 +18,7 @@ import jinja2
 import questionary
 import requests
 import yaml
+from rich.console import Console
 from rich.prompt import Confirm, Prompt
 
 import nf_core
@@ -134,12 +135,11 @@ class PipelineCreate:
         # Define the different template areas, and what actions to take for each
         # if they are skipped
         template_areas = {
-            "github": {"description": "Would you like to initialise a Git repository?", "file": True, "content": False},
+            "github": {"question": "Would you like to initialise a Git repository?", "file": True, "content": False},
             "ci": {
                 "description": dedent(
                     """\
-                    Would you like to include Continuous Integration tests?
-                    [grey39]nf-core provides Github Actions for CI testing:
+                    nf-core provides Github Actions for CI testing:
                      - GHA for full size testing with AWS
                      - GHA for small testing with AWS
                      - Comment on PRs against the master branch instead of dev
@@ -147,27 +147,26 @@ class PipelineCreate:
                      - Stale or delete manually tagged issues and PRs
                      - Fix code linting from a comment on the PR
                      - Posting an automated comment to the PR after linting the code
-                     - Run code linting (Prettier, Black, nf-core standards)[/]"""
+                     - Run code linting (Prettier, Black, nf-core standards)"""
                 ),
+                "question": """Would you like to include Continuous Integration tests?""",
                 "file": True,
                 "content": False,
             },
             "github_badges": {
-                "description": "Would you like to add GitHub badges to your RADME.md file?",
+                "question": "Would you like to add GitHub badges to your RADME.md file?",
                 "file": False,
                 "content": True,
             },
             "igenomes": {
-                "description": "Would you like to use genomic data?\n[grey39]The pipeline template will include built-in configuration for reference genomes with iGenomes[/]",
+                "description": "The pipeline template will include built-in configuration for reference genomes with iGenomes",
+                "question": "Would you like to use genomic data?",
                 "file": True,
                 "content": True,
             },
             "nf_core_configs": {
-                "description": dedent(
-                    """\
-                    Would you like to include nf-core configuration files?
-                    [grey39]The pipeline will include several configuration profiles (see [link=https://github.com/nf-core/configs]the nf-core/configs repository[/link])[\]"""
-                ),
+                "description": """The pipeline will include several configuration profiles (see [link=https://github.com/nf-core/configs]the nf-core/configs repository[/link])""",
+                "question": "Would you like to include nf-core configuration files?",
                 "file": False,
                 "content": True,
             },
@@ -245,7 +244,10 @@ class PipelineCreate:
 
         template_yaml["skip"] = []
         for area in template_areas:
-            if not Confirm.ask(f"[bold][blue]?[/] {template_areas[area]['description']}"):
+            if "description" in template_areas[area]:
+                console = Console()
+                console.print(f"[grey39]{template_areas[area]['description']}[/]")
+            if not Confirm.ask(f"[bold][blue]?[/] {template_areas[area]['question']}", default=True):
                 template_yaml["skip"].append(area)
         return template_yaml
 
