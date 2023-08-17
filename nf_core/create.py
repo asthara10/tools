@@ -174,8 +174,12 @@ class PipelineCreate:
 
         # Once all necessary parameters are set, check if the user wants to customize the template more
         if template_yaml_path is None and not plain:
+            console = Console()
+            console.print(
+                "[grey39]Pipelines that are not intended to be part of nf-core can be created with more customization,\nbut it is difficult to modify them afterwards to fulfill nf-core standards.[/]"
+            )
             customize_template = Confirm.ask(
-                "[bold][blue]?[/] Would you like to add this pipeline to nf-core?\n[grey39]Pipelines that are not intended to be part of nf-core can be created with more customization,\nbut it is difficult to modify them afterwards to fulfill nf-core standards.[/]",
+                "[bold][blue]?[/] Would you like to add this pipeline to nf-core?",
                 default=True,
             )
 
@@ -234,9 +238,11 @@ class PipelineCreate:
             template_areas (list<str>): List of available template areas to skip.
         """
         template_yaml = {}
-        prefix = Prompt.ask(
-            "[bold][blue]?[/] Provide your organisation name\n[grey39]The pipeline name will be prefixed with the provided organisation[/]"
-        )
+        console = Console()
+        console.print(f"[grey39]The pipeline name will be prefixed with the provided organisation[/]")
+        prefix = questionary.text(
+            "Provide your organisation name", style=nf_core.utils.nfcore_question_style
+        ).unsafe_ask()
         while not re.match(r"^[a-zA-Z_][a-zA-Z0-9-_]*$", prefix):
             log.error("[red]Pipeline prefix cannot start with digit or hyphen and cannot contain punctuation.[/red]")
             prefix = Prompt.ask("[bold][blue]?[/] Please provide a new organisation name")
@@ -245,7 +251,6 @@ class PipelineCreate:
         template_yaml["skip"] = []
         for area in template_areas:
             if "description" in template_areas[area]:
-                console = Console()
                 console.print(f"[grey39]{template_areas[area]['description']}[/]")
             if not Confirm.ask(f"[bold][blue]?[/] {template_areas[area]['question']}", default=True):
                 template_yaml["skip"].append(area)
