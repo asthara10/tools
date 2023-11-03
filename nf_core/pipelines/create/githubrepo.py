@@ -56,8 +56,8 @@ class GithubRepo(Screen):
                     token = "GITHUB_AUTH_TOKEN" in os.environ
                     yield TextInput(
                         "token",
-                        "GitHub token",
-                        "Your GitHub personal access token for login. Will use the environment variable GITHUB_AUTH_TOKEN if set.",
+                        "Using the environment variable GITHUB_AUTH_TOKEN" if token else "GitHub token",
+                        "Your GitHub personal access token for login.",
                         classes="column",
                         disabled=token,
                     )
@@ -100,6 +100,7 @@ class GithubRepo(Screen):
                 github_auth = self._github_authentication(
                     github_variables["gh_username"], os.environ["GITHUB_AUTH_TOKEN"]
                 )
+                log.debug("Using GITHUB_AUTH_TOKEN environment variable")
             elif github_variables["token"]:
                 github_auth = self._github_authentication(github_variables["gh_username"], github_variables["token"])
             else:
@@ -114,6 +115,7 @@ class GithubRepo(Screen):
             # Make sure that the authentication was successful
             try:
                 user.login
+                log.debug("GitHub authentication successful")
             except GithubException as e:
                 raise UserWarning(
                     f"Could not authenticate to GitHub with user name '{github_variables['gh_username']}'."
@@ -122,10 +124,13 @@ class GithubRepo(Screen):
                 )
 
             # Check if organisation exists
-            # If the organisation is nf-core or it doesn¡t exist, the repo will be created in the user account
+            # If the organisation is nf-core or it doesn't exist, the repo will be created in the user account
             if self.parent.TEMPLATE_CONFIG.org != "nf-core":
                 try:
                     org = github_auth.get_organization(self.parent.TEMPLATE_CONFIG.org)
+                    log.info(
+                        f"Repo will be created in the GitHub organisation account '{self.parent.TEMPLATE_CONFIG.org}'"
+                    )
                 except UnknownObjectException:
                     pass
 
@@ -137,9 +142,13 @@ class GithubRepo(Screen):
                     )
                 else:
                     # Create the repo in the user's account
+                    log.info(
+                        f"Repo will be created in the GitHub organisation account '{self.parent.TEMPLATE_CONFIG.org}'"
+                    )
                     self._create_repo_and_push(
                         user, pipeline_repo, github_variables["private"], github_variables["push"]
                     )
+                log.info(f"GitHub repository '{self.parent.TEMPLATE_CONFIG.name}' created successfully")
             except UserWarning as e:
                 log.info(f"There was an error with message: {e}" f"\n{exit_help_text_markdown}")
         elif event.button.id == "exit":
