@@ -171,7 +171,11 @@ class GithubRepo(Screen):
             )
 
         # Add the remote and push
-        pipeline_repo.create_remote("origin", repo.clone_url)
+        try:
+            pipeline_repo.create_remote("origin", repo.clone_url)
+        except git.exc.GitCommandError:
+            # Remote already exists
+            pass
         if push:
             pipeline_repo.remotes.origin.push(all=True).raise_if_error()
 
