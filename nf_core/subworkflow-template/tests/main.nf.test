@@ -9,6 +9,7 @@ nextflow_workflow {
     tag "subworkflows"
     tag "subworkflows_nfcore"
     tag "subworkflows/{{ component_name }}"
+    tag "{{ component_name }}"
     // TODO nf-core: Add tags for all modules used within this subworkflow. Example:
     tag "samtools"
     tag "samtools/sort"
