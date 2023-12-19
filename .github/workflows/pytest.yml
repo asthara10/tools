@@ -42,7 +42,7 @@ jobs:
     outputs:
       python-version: ${{ matrix.python-version }}
       runner: ${{ matrix.runner }}
-      run-tests: ${{ env.run-tests }}
+      run-tests: ${{ github.ref == 'refs/heads/master' || (matrix.runner == 'ubuntu-20.04' && matrix.python-version == '3.8') }}
 
   test:
     name: Test with Python ${{ needs.setup.outputs.python-version }} on ${{ needs.setup.outputs.runner }}
