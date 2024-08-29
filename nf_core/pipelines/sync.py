@@ -94,6 +94,7 @@ class PipelineSync:
             log.warning(
                 f"The `template_yaml_path` argument is deprecated. Saving pipeline creation settings in .nf-core.yml instead. Please remove {template_yaml_path} file."
             )
+            overwrite_template = False
             if getattr(self.config_yml, "template", None) is not None:
                 overwrite_template = questionary.confirm(
                     f"A template section already exists in '{self.config_yml_path}'. Do you want to overwrite?",
@@ -267,8 +268,23 @@ class PipelineSync:
         # Re-write the template yaml info from .nf-core.yml config
         if self.config_yml.template is not None:
             # Set force true in config to overwrite existing files
-
             self.config_yml.template.force = True
+            # Add required pipeline info to the config if not present
+            if self.config_yml.template.name is None:
+                self.config_yml.template.name = self.wf_config["manifest.name"].split("/")[1]
+            if self.config_yml.template.description is None:
+                self.config_yml.template.description = self.wf_config["manifest.description"]
+            if self.config_yml.template.author is None:
+                self.config_yml.template.author = self.wf_config["manifest.author"]
+            if self.config_yml.template.version is None:
+                self.config_yml.template.version = self.wf_config["manifest.version"]
+            if self.config_yml.template.org is None:
+                self.config_yml.template.org = self.wf_config["manifest.name"].split("/")[0]
+            if self.config_yml.template.outdir is None:
+                self.config_yml.template.outdir = str(self.pipeline_dir)
+            if self.config_yml.template.is_nfcore is None:
+                self.config_yml.template.is_nfcore = self.config_yml.template.org == "nf-core"
+            log.debug("Updated template config")
             with open(self.config_yml_path, "w") as config_path:
                 yaml.safe_dump(self.config_yml.model_dump(), config_path)
 
