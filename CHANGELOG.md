@@ -15,6 +15,8 @@
 
 ### Subworkflows
 
+- Install subworkflows with modules from different remotes ([#3083](https://github.com/nf-core/tools/pull/3083) and [#3456](https://github.com/nf-core/tools/pull/3456))
+
 ### General
 
 - output passed to write_params_file as Path object ([#3435](https://github.com/nf-core/tools/pull/3435))
@@ -26,7 +28,6 @@
 - Update prettier to 3.5.0 ([#3448](https://github.com/nf-core/tools/pull/3448))
 - chore(deps): update python:3.12-slim docker digest to 34656cd ([#3450](https://github.com/nf-core/tools/pull/3450))
 - Remove Twitter from README ([#3454](https://github.com/nf-core/tools/pull/3454))
-- Continuation of #3083 ([#3456](https://github.com/nf-core/tools/pull/3456))
 
 ## [v3.2.0 - Pewter Pangolin](https://github.com/nf-core/tools/releases/tag/3.2.0) - [2025-01-27]
 
